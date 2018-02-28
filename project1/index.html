@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<!--a). Look at Enter Name. Make a webpage like Enter Name using Javascript,
+except that the user can interactively choose from several different greetings
+of your choice (e.g., by selecting from a list of options). (b). Look at
+Number Build. Make a webpage like Number Build using Javascript, except that
+if a user marks the numbers summing to the year that University of Miami was
+founded, then the program displays a photo of the campus (of your choice).
+Place the files under public_html in your home directory.-->
+
+<html>
+  <head>
+    <title>CSC401 Project 1</title>
+    <script>
+      a = new Array (
+        'field1',
+        'field2',
+        'field3',
+        'field4',
+        'field5',
+        'field6',
+        'field7',
+        'field8'
+      )
+
+      b = new Array(1, 2, 4, 8, 16, 32, 64, 128 )
+
+      function compute() {
+        sum = 0
+        for ( i=0; i<b.length; i++ ) {
+          if ( document.NumberBuild[a[i]].checked ) {
+            sum = sum + b[i]
+          }
+        }
+        document.NumberBuild.theResult.value=sum
+        if (sum == 93) {
+          campus.style.display = 'block'
+        } else {
+          campus.style.display = 'none'
+        }
+      }
+
+      function getName() {
+        document.EnterName.Greeting.value=
+        document.EnterName.greetings.value + " " + document.EnterName.myName.value + "!"
+      }
+    </script>
+  </head>
+  <body>
+    <h2>a) Enter Name</h2>
+    <form name="EnterName">
+      <table>
+        <tr>
+          <td>
+            <b>1.</b>
+          </td>
+          <td>Enter your name: </td>
+          <td>
+            <input type=text name="myName" size=40>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>2.</b>
+          </td>
+          <td>Select from greeting list: </td>
+          <td>
+            <select name="greetings">
+              <option>Hello!</option>
+              <option>Hi!</option>
+              <option>Good morning!</option>
+              <option>Good afternoon!</option>
+              <option>Good evening!</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>3.</b>
+          </td>
+          <td>Click here when done:</td>
+          <td>
+            <input type=button value="Here" onClick=getName()>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>4.</b>
+          </td>
+          <td>Your personalized greeting:</td>
+          <td>
+            <input type=text name="Greeting" size=40>
+          </td>
+        </tr>
+      </table>
+    <p>
+    </form>
+
+    <h2>b) Number Builder</h2>
+    <form name="NumberBuild">
+      Select numbers to include in the total by clicking on the box to its left. Any number from 0 to 255 can be made by the correct selection of numbers.
+      <p>
+      <b>Food for thought</b>
+      <ul>
+        <li>Why is this?</li>
+        <li>Is there a fast way of deciding which are the appropriate numbers to pick?</li>
+        <li>Can there be more than one way of building a number?</li>
+      </ul>
+      <menu>
+        <table>
+          <script>
+            function makeCheckbox ( i ) {
+              document.write('<input type=checkbox name="',
+              a[i], '" onClick=compute()>' )
+            }
+
+            for ( i=0; i<a.length; i++) {
+              document.write("<tr><td>")
+              makeCheckbox(i)
+              document.write("</td><td>", b[i], "</td></tr>" )
+            }
+            document.write('<tr><td colspan=2>-------------------</td></tr>')
+            document.write('<tr><td><input type=text name="theResult" size=3 value=0>')
+            document.write('</td><td>Total</td></tr>')
+            //displayCampus()
+          </script>
+        </table>
+        <img id="campus" src="campus.jpg" style="display:none;max-height:70%;max-width:70%;">
+      </menu>
+    </form>
+  </body>
+</html>
