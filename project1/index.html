@@ -21,10 +21,13 @@ Place the files under public_html in your home directory.-->
         'field5',
         'field6',
         'field7',
-        'field8'
+        'field8',
+        'field9',
+        'field10',
+        'field11'
       )
 
-      b = new Array(1, 2, 4, 8, 16, 32, 64, 128 )
+      b = new Array(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 )
 
       function compute() {
         sum = 0
@@ -34,7 +37,7 @@ Place the files under public_html in your home directory.-->
           }
         }
         document.NumberBuild.theResult.value=sum
-        if (sum == 93) {
+        if (sum == 1925) {
           campus.style.display = 'block'
         } else {
           campus.style.display = 'none'
@@ -121,7 +124,7 @@ Place the files under public_html in your home directory.-->
               document.write("</td><td>", b[i], "</td></tr>" )
             }
             document.write('<tr><td colspan=2>-------------------</td></tr>')
-            document.write('<tr><td><input type=text name="theResult" size=3 value=0>')
+            document.write('<tr><td><input type=text name="theResult" size=4 value=0>')
             document.write('</td><td>Total</td></tr>')
             //displayCampus()
           </script>
