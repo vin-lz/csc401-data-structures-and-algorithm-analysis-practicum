@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>Double Hash</title>
+  <style type="text/css">
+  * {
+    box-sizing: border-box;
+  }
+  body {
+     font-family: "Trebuchet MS", Skia, "Lucida Sans Unicode", sans-serif;
+     font-size: 16px;
+     margin: 2.5em auto 5em 5% ;
+     width: 90%;
+  }
+  div#container {
+    width: 100%;
+    display: block;
+    float: left;
+  }
+  div.slot input.open {
+    background-color: green;
+  }
+  div.slot input.closed {
+    background-color: red;
+  }
+  div.slot input.indeterminate {
+    background-color: black;
+  }
+  div#hashmap {
+    border-radius: 2px;
+    height: 75px;
+    width: 1000px;
+  }
+  div.slot {
+    border: solid 1px;
+    height: 77px;
+    width: 52px;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+  }
+  div.slot:not(:nth-of-type(1)) {
+    border-left: none;
+  }
+  div.slot input.slot-value {
+    border: solid 1px transparent;
+
+    border-bottom: solid 1px;
+
+    font-size: 1.5em;
+    height: 50px;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    width: 50px;
+  }
+  div.slot input.slot-index {
+    border: none;
+    height: 25px;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    width: 50px;
+  }
+  div.button-holder {
+    display: inline-block;
+    margin: 10px 0 0 0;
+  }
+  div.button-holder input {
+    border-radius: 2px;
+    border: solid 1px #456;
+    display: inline-block;
+    font-size: 1.2em;
+    height: 32px;
+    margin: 0;
+    padding: 6px 4px;
+    width: 150px;
+  }
+  div.button-holder button {
+    background-color: #aaa;
+    border-radius: 4px;
+    border: solid 1px #7BE;
+    font-size: 1.1em;
+    height: 33px;
+    padding: 0;
+    width: 100px;
+  }
+  div.button-holder button:hover {
+    background-color: #ddd;
+    cursor: pointer;
+  }
+  </style>
+</head>
+<body>
+  <h1>Double Hashing</h1>
+  <p class="function">
+    First hash function: key mod 16
+    <br>
+    Second hash function: 2 * (key mod 4) + 1
+  </p>
+      <div id="container">
+        <div id="hashmap">
+        </div>
+        <p id="message">
+        </p>
+        <div id="action-buttons">
+          <div class="button-holder">
+            <input name="add" type="text">
+            <button id="add">Add</button>
+            <div class="button-holder">
+              <button id="Reset">Reset</button>
+            </div>
+          </div>
+        </div>
+      </body>
+      <script>
+      var hash = {
+        arr: [],
+        items: 0,
+        maxLength: 16,
+        get: function (index) {
+          return this.arr[index];
+        },
+        getIndex: function (value) {
+          return this.arr.indexOf(value);
+        },
+        hash: function (n) {
+          return n % 16;
+        },
+        isFull: function () {
+          return this.items >= this.maxLength;
+        },
+        jump: function (n) {
+          return 1 + ((n % 4) << 1);
+        },
+        set: function (index, value) {
+          this.arr[index] = value;
+        }
+      }
+      var messages = {
+        isFull: function () {
+          return "Table is full.";
+        },
+        slotIsClosed: function (index, jump) {
+          return "Slot " + index + " is filled. Jump forward " + jump + " slot(s).";
+        },
+        slotIsOpen: function (index) {
+          return "Insert to slot " + index + ".";
+        },
+        tableReset: function () {
+          return "Reset to empty.";
+        },
+      }
+      var general = {
+        add: function () {
+          var input = document.getElementById("action-buttons").getElementsByTagName("input")[0];
+          general.animateAdd(parseInt(input.value) || 0);
+          document.getElementById("action-buttons").getElementsByTagName("button")[0].disabled = true;
+        },
+        animateAdd: function (value) {
+          var h = hash.hash(value), j = hash.jump(value);
+
+          if (hash.isFull()) {
+            general.setMessage(messages.isFull());
+            document.getElementById("action-buttons").getElementsByTagName("input")[0].disabled = true;
+          } else {
+            for (var i = h, c = 0; ; i = (i + j) % hash.maxLength, c++) {
+              if (hash.get(i) != null) {
+                general.jumpForward(i, j, messages.slotIsClosed(i, j), c * 750);
+              } else {
+                general.lastJump(i, value, messages.slotIsOpen(i), c * 750);
+                break;
+              }
+            }
+            hash.items += 1;
+          }
+        },
+        reset: function (msg) {
+          document.getElementById("action-buttons").getElementsByTagName("input")[0].disabled = false;
+          hash.items = 0;
+          for (var i = 0; i < 16; i++) {
+            general.colorBox(i, "indeterminate");
+            general.updateSlot(i, null);
+            general.setMessage(msg || messages.tableReset());
+          }
+        },
+        colorBox: function (index, className) {
+          var i = document.getElementById(index).getElementsByTagName("input");
+
+          i[0].classList.add(className);
+          i[1].classList.add(className);
+
+          setTimeout(function () {
+            i[0].classList.remove(className);
+            i[1].classList.remove(className);
+          }, 500);
+        },
+        init: function () {
+          for (var i = 0; i < 16; i++) {
+            general.makeSlot(i, null);
+          }
+          general.reset("New table.");
+        },
+        jumpForward: function (index, jump, msg, time) {
+          setTimeout(function () {
+            general.setMessage(msg);
+            general.colorBox(index, "closed");
+          }, time);
+        },
+        lastJump: function (index, value, msg, time) {
+          setTimeout(function () {
+            general.setMessage(msg);
+            general.colorBox(index, "open");
+            general.updateSlot(index, value);
+
+            document.getElementById("action-buttons").getElementsByTagName("button")[0].disabled = false;
+          }, time);
+        },
+        makeSlot: function (index, value) {
+          var container = document.getElementById("hashmap"),
+          holder = document.createElement("div"),
+          indexSlot = document.createElement("input"),
+          valueSlot = document.createElement("input");
+
+          valueSlot.classList.add("slot-value");
+          valueSlot.disabled = true;
+          valueSlot.value = value || "-";
+
+          indexSlot.classList.add("slot-index");
+          indexSlot.disabled = true;
+          indexSlot.value = index;
+
+          holder.appendChild(valueSlot);
+          holder.appendChild(indexSlot);
+
+          holder.setAttribute("id", index);
+          holder.classList.add("slot");
+
+          container.appendChild(holder);
+        },
+
+        setMessage: function (msg) {
+          document.getElementById("message").innerHTML = msg;
+        },
+        updateSlot: function (index, value) {
+          var slots = document.getElementById(index).getElementsByTagName("input");
+
+          hash.set(index, value);
+
+          slots[0].value = typeof value === "number" ? value : "";
+          slots[1].value = index;
+        }
+      }
+
+      document.getElementById("add").onclick = general.add;
+      document.getElementById("Reset").onclick = general.reset;
+
+      general.init();
+    </script>
+    </html>
