@@ -6,3 +6,9 @@ CSC317 is a course on algorithmic thinking. The CSC317 mainline in the course do
 Taught by Prof. Odelia Schwartz
 
 Spring 2018
+
+## Install
+Simply click the `index.html` in individual project
+
+## License
+Do whatever you like with it. But don't copy and paste it to your coursework.
